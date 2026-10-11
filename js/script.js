@@ -23,23 +23,16 @@ const NS = {
   },
   bindHeader(){
     const menu=document.querySelector('[data-menu]'), links=document.querySelector('.navlinks');
-    if(links){
-      const current=(location.pathname.split('/').pop()||'index.html').toLowerCase();
-      links.querySelectorAll('a').forEach(a=>{const target=(a.getAttribute('href')||'').split('/').pop().toLowerCase();const active=target===current||(current===''&&target==='index.html');a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
-    }
-    menu?.setAttribute('aria-expanded','false');
-    menu?.addEventListener('click',(event)=>{event.preventDefault();event.stopPropagation();const open=!(links?.classList.contains('mobile-open'));links?.classList.toggle('mobile-open',open);menu?.setAttribute('aria-expanded',String(open));menu?.setAttribute('aria-label',open?'Close menu':'Open menu');menu.textContent=open?'×':'☰';});
-    links?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{links.classList.remove('mobile-open');menu?.setAttribute('aria-expanded','false');if(menu){menu.textContent='☰';menu.setAttribute('aria-label','Open menu')}}));
-    document.addEventListener('click',e=>{if(links?.classList.contains('mobile-open')&&!links.contains(e.target)&&!menu?.contains(e.target)){links.classList.remove('mobile-open');menu?.setAttribute('aria-expanded','false');if(menu){menu.textContent='☰';menu.setAttribute('aria-label','Open menu')}}});
+    menu?.addEventListener('click',()=>{links?.classList.toggle('mobile-open')});
     document.querySelector('[data-theme-toggle]')?.addEventListener('click',()=>{
-      const dark=document.documentElement.dataset.theme!=='dark'; document.documentElement.dataset.theme=dark?'dark':'light'; localStorage.setItem('ns-theme',dark?'dark':'light');
+      const dark=document.documentElement.dataset.theme!=='dark'; document.documentElement.dataset.theme=dark?'dark':'light'; localStorage.setItem('ns-theme',dark?'dark':'light'); this.toast(dark?'Dark mode enabled':'Light mode enabled');
     });
     document.querySelector('[data-rtl]')?.addEventListener('click',()=>{
-      const rtl=document.documentElement.dir!=='rtl'; document.documentElement.dir=rtl?'rtl':'ltr'; localStorage.setItem('ns-rtl',rtl);
+      const rtl=document.documentElement.dir!=='rtl'; document.documentElement.dir=rtl?'rtl':'ltr'; localStorage.setItem('ns-rtl',rtl); this.toast(rtl?'RTL layout enabled':'LTR layout enabled');
     });
     const cp=document.querySelector('[data-contact-toggle]'), pop=document.querySelector('[data-contact-pop]');
-    cp?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const open=!(pop?.classList.contains('open'));pop?.classList.toggle('open',open);cp?.setAttribute('aria-expanded',String(open));});
-    document.addEventListener('click',e=>{if(pop&&!pop.contains(e.target)&&e.target!==cp){pop.classList.remove('open');cp?.setAttribute('aria-expanded','false')}});
+    cp?.addEventListener('click',e=>{e.stopPropagation();pop?.classList.toggle('open')});
+    document.addEventListener('click',e=>{if(pop&&!pop.contains(e.target)&&e.target!==cp)pop.classList.remove('open')});
   },
   bindReveal(){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(x=>io.observe(x))},
   bindBackTop(){const b=document.querySelector('.backtop');window.addEventListener('scroll',()=>b?.classList.toggle('show',scrollY>500));b?.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}))},
